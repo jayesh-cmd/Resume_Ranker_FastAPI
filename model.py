@@ -3,8 +3,14 @@ from typing import List
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 from utils import extract_text_from_pdf
+from sentence_transformers import SentenceTransformer
+from functools import lru_cache
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+@lru_cache()
+def get_model():
+    return SentenceTransformer("paraphrase-MiniLM-L3-v2")
+model = get_model()
+
 
 async def process_resumes(job_description : str , files : List[UploadFile]):
     job_emb = model.encode(job_description)
