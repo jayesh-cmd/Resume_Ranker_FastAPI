@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resume Ranker AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f5f7fa;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    textarea, input[type="file"], button {
+      display: block;
+      width: 100%;
+      margin: 15px 0;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 30px;
+    }
+
+    .result-item {
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+    }
+
+    .result-item b {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <h1>Resume Ranker AI</h1>
+
+  <form id="uploadForm">
+    <label for="jobDesc"><b>Job Description:</b></label>
+    <textarea id="jobDesc" placeholder="Paste the job description here..." required></textarea>
+
+    <label for="files"><b>Upload Resumes (PDF only):</b></label>
+    <input type="file" id="files" accept=".pdf" multiple required>
+
+    <button type="submit">Rank Resumes</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const jobDesc = document.getElementById("jobDesc").value.trim();
+      const files = document.getElementById("files").files;
+
+      if (!jobDesc || files.length === 0) {
+        alert("Please provide a job description and at least one resume PDF.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("job_description", jobDesc);
+      for (let i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+      }
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "<p>Processing... please wait.</p>";
+
+      try {
+        const res = await fetch("/rank", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        resultDiv.innerHTML = "<h3>Ranked Resumes:</h3>";
+
+        if (data.ranked_resumes.length === 0) {
+          resultDiv.innerHTML += "<p>No matching resumes found.</p>";
+        }
+
+        data.ranked_resumes.forEach((item, index) => {
+          resultDiv.innerHTML += `
+            <div class="result-item">
+              <b>${index + 1}. ${item.filename}</b><br>
+              Similarity Score: ${item.score}
+            </div>
+          `;
+        });
+      } catch (err) {
+        resultDiv.innerHTML = "<p style='color:red;'>Error: Could not connect to API.</p>";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# 🧠 Resume Ranker AI (FastAPI)
+
+A simple, production-ready API that ranks resume PDFs based on a job description using **Sentence Transformer** embeddings and **cosine similarity**. Built using **FastAPI**.
+
+## 🚀 Features
+- Upload multiple PDF resumes
+- Input job description text
+- Get ranked similarity scores using transformer embeddings
+- Auto docs via Swagger UI
+
+## 🗂️ Tech Stack
+- Python
+- FastAPI
+- Sentence-Transformers (MiniLM)
+- PyPDF2
+- Scikit-learn
+
+## 🔧 How to Run
+
+1. Clone this repo
+2. Install dependencies
+```bash
+pip install -r requirements.txt
